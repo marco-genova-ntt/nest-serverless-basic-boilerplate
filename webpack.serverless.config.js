@@ -1,5 +1,3 @@
-
-const webpack = require('webpack');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const slsw = require('serverless-webpack');
@@ -7,12 +5,13 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 
 module.exports = {
-  entry: ['webpack/hot/poll?100', './src/main.ts'],
-  watch: true,
+  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
+  entry: ['./src/handler.ts'],
+  watch: false,
+  target: 'node',
   optimization: {
     minimize: false
   },
-  target: 'node',
   externals: [
     nodeExternals({
       whitelist: ['webpack/hot/poll?100'],
@@ -27,15 +26,14 @@ module.exports = {
       },
     ],
   },
-  mode: 'development',
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     plugins: [new TsconfigPathsPlugin()]
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
   output: {
+    libraryTarget: 'commonjs',
     path: path.join(__dirname, 'dist'),
-    filename: '[name].js',
+    filename: 'handler.js',
   },
   devtool: 'source-map',
-};
+}
